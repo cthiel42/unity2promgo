@@ -66,7 +66,7 @@ scrape_configs:
 ```
 
 ## Installation
-After installing go and cloning this repositroy it is requried to install the following go dependencies:
+After installing go and cloning this repositroy it is required to install the following go dependencies:
 - github.com/equelin/gounity
 - github.com/prometheus/client_golang/prometheus
 - github.com/prometheus/client_golang/prometheus/promhttp
@@ -77,4 +77,35 @@ This can be done using go *get -u <dependency_name>*
 In the project base directory run
 **go build**
 **go run main.go utils.go unitycollector.go**
+
+## Docker
+Ensure that the configuration file you have is up-to-date and accurate with the metrics you want collected, the destination of your Unity array, and the credentials to connect to the array. Then you will be able to build the image.
+
+Build the image with the following command
+```
+docker build -t unity2promgo --network=host .
+```
+Run the container with the following command
+```
+docker run -d \
+        --name unity2promgo \
+        --restart=always \
+        --net=host \
+        unity2promgo
+```
+
+An alternative way to run the container would be to 
+or pull the image from dockerhub with the following command
+```
+docker pull cthiel42/unity2promgo
+```
+and then mount your configuration file to the container in your docker run command similar to below
+```
+docker run -d \
+        --name unity2promgo \
+        --restart=always 
+        --net=host \ 
+        -v /Path/to/config.json:/opt/unityexporter/config.json:ro \ 
+        unity2promgo
+```
 

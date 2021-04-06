@@ -97,8 +97,7 @@ docker run -d \
         unity2promgo
 ```
 
-An alternative way to run the container would be to 
-or pull the image from dockerhub with the following command
+An alternative way to run the container would be to pull the image from dockerhub with the following command
 ```
 docker pull cthiel42/unity2promgo
 ```
@@ -109,6 +108,6 @@ docker run -d \
         --restart=always 
         --net=host \ 
         -v /Path/to/config.json:/opt/unityexporter/config.json:ro \ 
-        unity2promgo
+        cthiel42/unity2promgo
 ```
 

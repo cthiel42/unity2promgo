@@ -159,11 +159,28 @@ func (uc UnityCollector) CollectMetrics() {
 			// TODO: Muss async sein
 
 			log.Print("UnityCollector - Collector: Query Realtime Metrics with interval")
+			// The following is error handling for any bad calls from the Unity API
+			// Errors won't update the metrics, but will prevent the exporter from a fatal error
+			// This was put in due to occasional 422 errors received from the Unity API that was breaking shit
 			query, err := uc.Unity.Session.NewMetricRealTimeQuery(realtimeMetricPaths, uint32(uc.Exporter.Interval))
-			if err != nil {
-				log.Fatal(err)
+			_ = query
+			_ = err
+			for i := 0; i < 5; i++ {
+				if i == 4 {
+					log.Print("Failed too many times. Metrics won't be updated")
+					return
+				} else if err != nil {
+					log.Print(err)
+					time.Sleep(time.Second)
+					query, err := uc.Unity.Session.NewMetricRealTimeQuery(realtimeMetricPaths, uint32(uc.Exporter.Interval))
+					_ = query
+					_ = err
+				} else {
+					break
+				}
 			}
-			// Waiting thforat the sampling of the metrics to be done
+			
+			// Waiting for the sampling of the metrics to be done
 			time.Sleep(time.Duration(query.Content.Interval) * time.Second)
 
 			// Get the results of the query
